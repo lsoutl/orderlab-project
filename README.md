@@ -44,7 +44,7 @@ python generate_report.py          # site/index.html 생성
 
 | 이벤트 | lint | test (ubuntu / windows) | deploy |
 |---|---|---|---|
-| Pull Request → main | 실행 | 실행 | 실행 안 함 (`if: github.event_name == "push"`) |
+| Pull Request → main | 실행 | 실행 | 실행 안 함 (`if: github.event_name == 'push'`) |
 | Push → main | 실행 | 실행 | lint 와 test 가 모두 PASS 한 경우에만 실행 (`needs`) |
 
 deploy job 은 `generate_report.py` 로 `site/index.html` 을 만들고 GitHub Pages 에 배포합니다.

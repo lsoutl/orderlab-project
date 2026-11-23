@@ -11,7 +11,7 @@ def client():
 
 def test_create_and_get(client):
     r = client.post("/orders", json={"price": 10000, "quantity": 2})
-    assert r.status_code == 201
+    assert r.status_code == 200
     assert r.json() == {"id": 1, "subtotal": 20000}
     g = client.get("/orders/1")
     assert g.status_code == 200

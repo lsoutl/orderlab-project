@@ -1,7 +1,9 @@
-name: Python CI
-on: [push, pull_request]
-permissions:
-  contents: read
+name: OrderLab CI-CD
+on:
+  push: {branches: [main]}
+  pull_request: {branches: [main]}
+permissions: {contents: read}
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -33,3 +35,26 @@ jobs:
           name: coverage-xml-${{ matrix.os }}
           path: coverage.xml
           if-no-files-found: ignore
+
+  deploy:
+    if: github.event_name == "push"
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with: {python-version: "3.14"}
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python generate_report.py
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./site
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -42,13 +42,14 @@ python generate_report.py          # site/index.html 생성
 
 ## CI/CD 동작 조건
 
-| 이벤트 | lint | test (ubuntu / windows) | deploy |
-|---|---|---|---|
-| Pull Request → main | 실행 | 실행 | 실행 안 함 (`if: github.event_name == 'push'`) |
-| Push → main | 실행 | 실행 | lint 와 test 가 모두 PASS 한 경우에만 실행 (`needs`) |
+| 이벤트 | lint | test (ubuntu / windows) | build | deploy |
+|---|---|---|---|---|
+| Pull Request → main | 실행 | 실행 | 실행 안 함 (`if: github.event_name == 'push'`) | 실행 안 함 |
+| Push → main | 실행 | 실행 | lint 와 test 가 모두 PASS 한 경우에만 실행 (`needs`) | build 성공 후 실행 |
 
-deploy job 은 `generate_report.py` 로 `site/index.html` 을 만들고 GitHub Pages 에 배포합니다.
-테스트가 하나라도 FAIL 하면 `needs` 조건 때문에 deploy 는 skipped 가 되어 배포가 차단됩니다.
+build job 이 `generate_report.py` 로 `site/index.html` 을 만들어 Pages artifact 로 올리고, deploy job 이 이를 GitHub Pages 에 배포합니다.
+테스트가 하나라도 FAIL 하면 `needs` 조건 때문에 build 와 deploy 모두 skipped 가 되어 배포가 차단됩니다.
+(업로드와 배포를 한 job 에서 연달아 실행하면 artifact 목록 반영이 늦어 간헐적으로 실패하므로 두 job 으로 분리했습니다.)
 
 ## 실패 재현 기록
 
